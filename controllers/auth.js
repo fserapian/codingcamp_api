@@ -20,11 +20,57 @@ exports.register = asyncHandler(async (req, res, next) => {
     role,
   });
 
-  // Get token
+  sendJwtTokenResponse(user, 200, res);
+});
+
+/**
+ * @desc  Login user
+ * @route POST /api/v1/auth/login
+ * @access public
+ *
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
+ */
+exports.login = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(new ErrorResponse('Please enter email and password'));
+  }
+
+  const user = await User.findOne({ email: email }).select('password');
+
+  if (!user) {
+    return next(new ErrorResponse('Invalid Credentials', 401));
+  }
+
+  const passwordsMath = await user.matchPasswords(password);
+
+  if (!passwordsMath) {
+    return next(new ErrorResponse('Invalid Credentials', 401));
+  }
+
+  sendJwtTokenResponse(user, 200, res);
+});
+
+const sendJwtTokenResponse = (user, statusCode, res) => {
+  // Create token
   const token = user.signJwtToken();
 
-  res.status(200).json({
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    options.secure = true;
+  }
+
+  res.status(statusCode).cookie('token', token, options).json({
     success: true,
     token: token,
   });
-});
+};
