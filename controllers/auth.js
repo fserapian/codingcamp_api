@@ -1,0 +1,26 @@
+const ErrorResponse = require('../utils/ErrorResponse');
+const asyncHandler = require('../middleware/async-handler');
+const User = require('../models/User');
+
+/**
+ * @desc  Register user
+ * @route POST /api/v1/auth/register
+ * @access public
+ *
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
+ */
+exports.register = asyncHandler(async (req, res, next) => {
+  // const { name, email, password, role } = req.body;
+  const user = await User.create({
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    role: req.body.role,
+  });
+
+  res.status(200).json({
+    success: true,
+  });
+});
