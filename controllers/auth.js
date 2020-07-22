@@ -12,12 +12,12 @@ const User = require('../models/User');
  * @param {Object} next
  */
 exports.register = asyncHandler(async (req, res, next) => {
-  // const { name, email, password, role } = req.body;
+  const { name, email, password, role } = req.body;
   const user = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    role: req.body.role,
+    name,
+    email,
+    password,
+    role,
   });
 
   res.status(200).json({
