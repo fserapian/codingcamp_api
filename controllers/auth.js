@@ -74,3 +74,25 @@ const sendJwtTokenResponse = (user, statusCode, res) => {
     token: token,
   });
 };
+
+/**
+ * @desc  Get logged in user
+ * @route GET /api/v1/auth/me
+ * @access public
+ *
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
+ */
+exports.getMe = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    return next(new ErrorResponse('Cannot find user', 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: user,
+  });
+});
