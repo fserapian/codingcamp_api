@@ -19,16 +19,18 @@ const courseRouter = require('./courses');
 // Re-route course router to other resources
 router.use('/:bootcampId/courses', courseRouter);
 
+const { protect } = require('../middleware/auth');
+
 router
   .route('/')
   .get(advancedResults(Bootcamp, 'courses'), getBootcamps)
-  .post(createBootcamp);
+  .post(protect, createBootcamp);
 
 router
   .route('/:id')
   .get(getBootcamp)
-  .put(updateBootcamp)
-  .delete(deleteBootcamp);
+  .put(protect, updateBootcamp)
+  .delete(protect, deleteBootcamp);
 
 router.route('/radius/:zipcode/:distance').get(getBootcampByRadius);
 
