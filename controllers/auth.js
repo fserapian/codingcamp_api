@@ -1,6 +1,7 @@
 const ErrorResponse = require('../utils/ErrorResponse');
 const asyncHandler = require('../middleware/async-handler');
 const User = require('../models/User');
+const { findById } = require('../models/User');
 
 /**
  * @desc  Register user
@@ -54,27 +55,6 @@ exports.login = asyncHandler(async (req, res, next) => {
   sendJwtTokenResponse(user, 200, res);
 });
 
-const sendJwtTokenResponse = (user, statusCode, res) => {
-  // Create token
-  const token = user.signJwtToken();
-
-  const options = {
-    expires: new Date(
-      Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-  };
-
-  if (process.env.NODE_ENV === 'production') {
-    options.secure = true;
-  }
-
-  res.status(statusCode).cookie('token', token, options).json({
-    success: true,
-    token: token,
-  });
-};
-
 /**
  * @desc  Get logged in user
  * @route GET /api/v1/auth/me
@@ -96,3 +76,53 @@ exports.getMe = asyncHandler(async (req, res, next) => {
     data: user,
   });
 });
+
+/**
+ * @desc  Forgot password
+ * @route POST /api/v1/auth/forgotpassword
+ * @access public
+ *
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
+ */
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(
+      new ErrorResponse(`Cannot find user with email ${req.body.email}`, 404)
+    );
+  }
+
+  const resetToken = user.getResetPasswordToken();
+  // console.log('token->', resetToken);
+
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    success: true,
+    data: user,
+  });
+});
+
+const sendJwtTokenResponse = (user, statusCode, res) => {
+  // Create token
+  const token = user.signJwtToken();
+
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    options.secure = true;
+  }
+
+  res.status(statusCode).cookie('token', token, options).json({
+    success: true,
+    token: token,
+  });
+};
