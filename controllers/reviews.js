@@ -84,3 +84,31 @@ exports.createReview = asyncHandler(async (req, res, next) => {
     data: review,
   });
 });
+
+/**
+ * @desc Update review
+ * @route PUT /api/v1/reviews/:id
+ * @access private
+ *
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
+ * @param {String} id
+ */
+exports.updateReview = asyncHandler(async (req, res, next) => {
+  const review = await Review.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!review) {
+    return next(
+      new ErrorResponse(`No review found with id ${req.params.id}`, 404)
+    );
+  }
+
+  res.status(200).json({
+    success: true,
+    data: review,
+  });
+});
