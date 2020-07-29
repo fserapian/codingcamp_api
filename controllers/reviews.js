@@ -112,3 +112,30 @@ exports.updateReview = asyncHandler(async (req, res, next) => {
     data: review,
   });
 });
+
+/**
+ * @desc Delete review
+ * @route DELETE /api/v1/reviews/:id
+ * @access private
+ *
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
+ * @param {String} id
+ */
+exports.deleteReview = asyncHandler(async (req, res, next) => {
+  const review = await Review.findById(req.params.id);
+
+  if (!review) {
+    return next(
+      new ErrorResponse(`No review found with id ${req.params.id}`, 404)
+    );
+  }
+
+  await review.remove();
+
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
