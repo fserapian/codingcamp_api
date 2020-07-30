@@ -57,6 +57,27 @@ exports.login = asyncHandler(async (req, res, next) => {
 });
 
 /**
+ * @desc  Logout user / Clear cookie
+ * @route GET /api/v1/auth/logout
+ * @access private
+ *
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
+ */
+exports.logout = asyncHandler(async (req, res, next) => {
+  res.cookie('token', 'none', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
+
+/**
  * @desc  Get logged in user
  * @route GET /api/v1/auth/me
  * @access public
@@ -66,6 +87,8 @@ exports.login = asyncHandler(async (req, res, next) => {
  * @param {Object} next
  */
 exports.getMe = asyncHandler(async (req, res, next) => {
+  console.log('hellooooo');
+  console.log('req.user.id->', req.user.id);
   const user = await User.findById(req.user.id);
 
   if (!user) {
