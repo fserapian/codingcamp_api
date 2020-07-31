@@ -8,6 +8,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const rateLimit = require('express-rate-limit');
 const errorHandler = require('./middleware/error-handler');
 const connectDB = require('./config/db');
 
@@ -46,6 +47,13 @@ app.use(xss());
 
 // Prevent http parameter pollution attacks
 app.use(hpp());
+
+// Set rate limit
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 100,
+});
+app.use(limiter);
 
 // Static files location
 app.use(express.static(path.join(__dirname, 'public')));
