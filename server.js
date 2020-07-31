@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 const errorHandler = require('./middleware/error-handler');
 const connectDB = require('./config/db');
 
@@ -42,6 +43,9 @@ app.use(helmet());
 
 // Prevent cross-site scripting
 app.use(xss());
+
+// Prevent http parameter pollution attacks
+app.use(hpp());
 
 // Static files location
 app.use(express.static(path.join(__dirname, 'public')));
