@@ -9,6 +9,7 @@ const helmet = require('helmet');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const rateLimit = require('express-rate-limit');
+const cors = require('cors');
 const errorHandler = require('./middleware/error-handler');
 const connectDB = require('./config/db');
 
@@ -54,6 +55,9 @@ const limiter = rateLimit({
   max: 100,
 });
 app.use(limiter);
+
+// Enable CORS policy
+app.use(cors());
 
 // Static files location
 app.use(express.static(path.join(__dirname, 'public')));
