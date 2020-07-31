@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const fileupload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
 const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 const errorHandler = require('./middleware/error-handler');
 const connectDB = require('./config/db');
 
@@ -34,6 +35,9 @@ app.use(fileupload());
 
 // Sanitize data
 app.use(mongoSanitize());
+
+// Add security headers
+app.use(helmet());
 
 // Static files location
 app.use(express.static(path.join(__dirname, 'public')));
