@@ -1,5 +1,5 @@
 # codingcamp_api
-A complete web api to practice node.js
+A complete web api to in node.js
 
 ## How to run the app
 1. Install the dependencies with `npm install`
